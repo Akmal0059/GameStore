@@ -1,0 +1,19 @@
+﻿@model IEnumerable<GameStore.WebUI.Models.CategoryInfo>
+
+@Html.ActionLink("Домой", "List", "Game", null,
+    new { @class = "btn btn-block btn-default btn-lg" })
+
+@foreach (var link in Model)
+{
+    @Html.RouteLink(link.CategoryName, new
+    {
+        controller = "Game",
+        action = "List",
+        category = link.CategoryName,
+        page = 1
+    }, new
+    {
+        @class = "btn btn-block btn-default btn-lg"
+        + (link.IsSelected? " btn-primary" : "")
+    })
+}

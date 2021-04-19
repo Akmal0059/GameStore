@@ -1,0 +1,17 @@
+﻿@model GameStore.Domain.Entities.Game
+
+<div class="well">
+    <h3>
+        <strong>@Model.Name</strong>
+        @if (Model.Price != 0)
+        {
+            <span class="pull-right label label-primary">@Model.Price.ToString("# руб")</span>
+        }
+        else
+        {
+            <span class="pull-right label label-primary">Бесплатно</span>
+        }
+
+    </h3>
+    <span class="lead">@Model.Description</span>
+</div>
