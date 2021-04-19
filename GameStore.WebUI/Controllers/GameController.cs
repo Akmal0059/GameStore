@@ -21,7 +21,7 @@ namespace GameStore.WebUI.Controllers
             GamesListViewModel model = new GamesListViewModel()
             {
                 Games = repos.Games
-                        .Where(x=> category == (string)null || x.Category == category)
+                        .Where(x=> category == null || x.Category.CategoryName == category)
                         .OrderBy(x => x.Id)
                         .Skip((page - 1) * pageSize)
                         .Take(pageSize),

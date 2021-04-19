@@ -104,11 +104,11 @@ namespace GameStore.UnitTests
             Mock<IGameRepository> mock = new Mock<IGameRepository>();
             mock.Setup(m => m.Games).Returns(new List<Game>
             {
-                new Game { Id = 1, Name = "Игра1", Category="Cat1"},
-                new Game { Id = 2, Name = "Игра2", Category="Cat2"},
-                new Game { Id = 3, Name = "Игра3", Category="Cat1"},
-                new Game { Id = 4, Name = "Игра4", Category="Cat2"},
-                new Game { Id = 5, Name = "Игра5", Category="Cat3"}
+                new Game { Id = 1, Name = "Игра1", Category = new Category(){CategoryName = "Cat1"} },
+                new Game { Id = 2, Name = "Игра2", Category = new Category(){CategoryName = "Cat2"}},
+                new Game { Id = 3, Name = "Игра3", Category = new Category(){CategoryName = "Cat1"}},
+                new Game { Id = 4, Name = "Игра4", Category = new Category(){CategoryName = "Cat2"}},
+                new Game { Id = 5, Name = "Игра5", Category = new Category(){CategoryName = "Cat2"}}
             });
             GameController controller = new GameController(mock.Object);
             controller.pageSize = 3;
@@ -118,8 +118,8 @@ namespace GameStore.UnitTests
 
             // Assert
             Assert.AreEqual(result.Count(), 2);
-            Assert.IsTrue(result[0].Name == "Игра2" && result[0].Category == "Cat2");
-            Assert.IsTrue(result[1].Name == "Игра4" && result[1].Category == "Cat2");
+            Assert.IsTrue(result[0].Name == "Игра2" && result[0].Category.CategoryName == "Cat2");
+            Assert.IsTrue(result[1].Name == "Игра4" && result[1].Category.CategoryName == "Cat2");
         }
 
         [TestMethod]
@@ -129,10 +129,10 @@ namespace GameStore.UnitTests
             Mock<IGameRepository> mock = new Mock<IGameRepository>();
             mock.Setup(m => m.Games).Returns(new List<Game> 
             {
-                new Game { Id = 1, Name = "Игра1", Category="Симулятор"},
-                new Game { Id = 2, Name = "Игра2", Category="Симулятор"},
-                new Game { Id = 3, Name = "Игра3", Category="Шутер"},
-                new Game { Id = 4, Name = "Игра4", Category="RPG"},
+                new Game { Id = 1, Name = "Игра1", Category = new Category(){CategoryName = "Симулятор"}},
+                new Game { Id = 2, Name = "Игра2", Category = new Category(){CategoryName = "Симулятор"}},
+                new Game { Id = 3, Name = "Игра3", Category = new Category(){CategoryName = "Шутер"}},
+                new Game { Id = 4, Name = "Игра4", Category = new Category(){CategoryName = "RPG"}},
             });
 
             // Организация - создание контроллера
