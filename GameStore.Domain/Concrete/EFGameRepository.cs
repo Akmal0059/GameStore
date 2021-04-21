@@ -13,5 +13,6 @@ namespace GameStore.Domain.Concrete
     {
         GameDBContext context = new GameDBContext();
         public IEnumerable<Game> Games => context.Games.Include(x=>x.Category);
+        public IEnumerable<Category> Categories => context.Categories;
     }
 }

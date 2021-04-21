@@ -11,5 +11,6 @@ namespace GameStore.Domain.Concrete
     public class GameDBContext:DbContext
     {
         public DbSet<Game> Games { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

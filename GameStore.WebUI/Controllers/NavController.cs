@@ -1,4 +1,5 @@
 ﻿using GameStore.Domain.Abstract;
+using GameStore.Domain.Entities;
 using GameStore.WebUI.Models;
 using System;
 using System.Collections.Generic;
@@ -21,15 +22,16 @@ namespace GameStore.WebUI.Controllers
         public PartialViewResult Menu(string category = null)
         {
             //ViewBag.SelectedCategory = category;
+            Category cat = repository.Categories.FirstOrDefault(x => x.CategoryName == category);
             IEnumerable<CategoryInfo> categories = repository.Games
-                .Select(game => new CategoryInfo() 
-                { 
-                    CategoryName =  game.Category,
-                    IsSelected = game.Category == category
+                .Select(game => new CategoryInfo()
+                {
+                    Category = game.Category,
+                    IsSelected = category != null ? game.Category.Id == cat.Id : false
                 })
-                .GroupBy(p => p.CategoryName)
+                .GroupBy(p => p.Category.Id)
                 .Select(g => g.First())
-                .OrderBy(x => x.CategoryName);
+                .OrderBy(x => x.Category.Id);
             return PartialView(categories);
         }
     }
