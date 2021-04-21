@@ -102,13 +102,22 @@ namespace GameStore.UnitTests
         {
             // Организация (arrange)
             Mock<IGameRepository> mock = new Mock<IGameRepository>();
+            Category cat1 = new Category() { Id = 1, CategoryName = "Cat1" };
+            Category cat2 = new Category() { Id = 2, CategoryName = "Cat2" };
+            Category cat3 = new Category() { Id = 3, CategoryName = "Cat3" };
             mock.Setup(m => m.Games).Returns(new List<Game>
             {
-                new Game { Id = 1, Name = "Игра1", Category="Cat1"},
-                new Game { Id = 2, Name = "Игра2", Category="Cat2"},
-                new Game { Id = 3, Name = "Игра3", Category="Cat1"},
-                new Game { Id = 4, Name = "Игра4", Category="Cat2"},
-                new Game { Id = 5, Name = "Игра5", Category="Cat3"}
+                new Game { Id = 1, Name = "Игра1", Category = cat1},
+                new Game { Id = 2, Name = "Игра2", Category = cat2},
+                new Game { Id = 3, Name = "Игра3", Category = cat1},
+                new Game { Id = 4, Name = "Игра4", Category = cat2},
+                new Game { Id = 5, Name = "Игра5", Category = cat3}
+            });
+            mock.Setup(m => m.Categories).Returns(new List<Category>
+            {
+                 cat1,
+                 cat2,
+                 cat3
             });
             GameController controller = new GameController(mock.Object);
             controller.pageSize = 3;
@@ -118,8 +127,8 @@ namespace GameStore.UnitTests
 
             // Assert
             Assert.AreEqual(result.Count(), 2);
-            Assert.IsTrue(result[0].Name == "Игра2" && result[0].Category == "Cat2");
-            Assert.IsTrue(result[1].Name == "Игра4" && result[1].Category == "Cat2");
+            Assert.IsTrue(result[0].Name == "Игра2" && result[0].Category.CategoryName == "Cat2");
+            Assert.IsTrue(result[1].Name == "Игра4" && result[1].Category.CategoryName == "Cat2");
         }
 
         [TestMethod]
@@ -129,36 +138,43 @@ namespace GameStore.UnitTests
             Mock<IGameRepository> mock = new Mock<IGameRepository>();
             mock.Setup(m => m.Games).Returns(new List<Game> 
             {
-                new Game { Id = 1, Name = "Игра1", Category="Симулятор"},
-                new Game { Id = 2, Name = "Игра2", Category="Симулятор"},
-                new Game { Id = 3, Name = "Игра3", Category="Шутер"},
-                new Game { Id = 4, Name = "Игра4", Category="RPG"},
+                new Game { Id = 1, Name = "Игра1", Category = new Category(){Id = 2, CategoryName = "Симулятор"}},
+                new Game { Id = 2, Name = "Игра2", Category = new Category(){Id = 2, CategoryName = "Симулятор"}},
+                new Game { Id = 3, Name = "Игра3", Category = new Category(){Id = 3, CategoryName = "Шутер"}},
+                new Game { Id = 4, Name = "Игра4", Category = new Category(){Id = 1, CategoryName = "RPG"}},
             });
 
             // Организация - создание контроллера
             NavController target = new NavController(mock.Object);
 
             // Действие - получение набора категорий
-            List<string> results = ((IEnumerable<string>)target.Menu().Model).ToList();
+            List<CategoryInfo> results = ((IEnumerable<CategoryInfo>)target.Menu().Model).ToList();
 
             // Утверждение
             Assert.AreEqual(results.Count(), 3);
-            Assert.AreEqual(results[0], "RPG");
-            Assert.AreEqual(results[1], "Симулятор");
-            Assert.AreEqual(results[2], "Шутер");
+            Assert.AreEqual(results[0].Category.Id, 1);
+            Assert.AreEqual(results[1].Category.Id, 2);
+            Assert.AreEqual(results[2].Category.Id, 3);
         }
 
         [TestMethod]
-        public void Indicates_Selected_Category()
+        public void Indicates_Selected_Category() 
         {
             // Организация - создание имитированного хранилища
             Mock<IGameRepository> mock = new Mock<IGameRepository>();
+            Category cat1 = new Category() { Id = 1, CategoryName = "Симулятор" };
+            Category cat2 = new Category() { Id = 2, CategoryName = "Шутер" };
+
             mock.Setup(m => m.Games).Returns(new Game[] 
             {
-                new Game { Id = 1, Name = "Игра1", Category="Симулятор"},
-                new Game { Id = 2, Name = "Игра2", Category="Шутер"}
+                new Game { Id = 1, Name = "Игра1", Category = cat1},
+                new Game { Id = 2, Name = "Игра2", Category = cat2},
             });
-
+            mock.Setup(m => m.Categories).Returns(new List<Category>
+            {
+                 cat1,
+                 cat2
+            });
             // Организация - создание контроллера
             NavController target = new NavController(mock.Object);
 
@@ -166,10 +182,10 @@ namespace GameStore.UnitTests
             string categoryToSelect = "Шутер";
 
             // Действие
-            string result = target.Menu(categoryToSelect).ViewBag.SelectedCategory;
+            var result = ((IEnumerable<CategoryInfo>)target.Menu("Шутер").Model).First(x=>x.IsSelected);
 
             // Утверждение
-            Assert.AreEqual(categoryToSelect, result);
+            Assert.AreEqual(categoryToSelect, result.Category.CategoryName);
         }
         
         [TestMethod]
@@ -177,13 +193,23 @@ namespace GameStore.UnitTests
         {
             /// Организация (arrange)
             Mock<IGameRepository> mock = new Mock<IGameRepository>();
+            Category cat1 = new Category() { Id = 1, CategoryName = "Cat1" };
+            Category cat2 = new Category() { Id = 2, CategoryName = "Cat2" };
+            Category cat3 = new Category() { Id = 3, CategoryName = "Cat3" };
+
             mock.Setup(m => m.Games).Returns(new List<Game>
             {
-                new Game { Id = 1, Name = "Игра1", Category="Cat1"},
-                new Game { Id = 2, Name = "Игра2", Category="Cat2"},
-                new Game { Id = 3, Name = "Игра3", Category="Cat1"},
-                new Game { Id = 4, Name = "Игра4", Category="Cat2"},
-                new Game { Id = 5, Name = "Игра5", Category="Cat3"}
+                new Game { Id = 1, Name = "Игра1", Category = cat1},
+                new Game { Id = 2, Name = "Игра2", Category = cat2},
+                new Game { Id = 3, Name = "Игра3", Category = cat1},
+                new Game { Id = 4, Name = "Игра4", Category = cat2},
+                new Game { Id = 5, Name = "Игра5", Category = cat3},
+            });
+            mock.Setup(m => m.Categories).Returns(new List<Category>
+            {
+                 cat1,
+                 cat2,
+                 cat3
             });
             GameController controller = new GameController(mock.Object);
             controller.pageSize = 3;

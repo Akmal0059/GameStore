@@ -6,9 +6,9 @@ using System.Web;
 
 namespace GameStore.WebUI.Models
 {
-    public class CategoryInfo
+    public class CartIndexViewModel
     {
-        public Category Category { get; set; }
-        public bool IsSelected { get; set; }
+        public Cart Cart { get; set; }
+        public string ReturnUrl { get; set; }
     }
 }

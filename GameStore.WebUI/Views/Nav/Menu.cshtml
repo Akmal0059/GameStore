@@ -5,11 +5,11 @@
 
 @foreach (var link in Model)
 {
-    @Html.RouteLink(link.CategoryName, new
+    @Html.RouteLink(link.Category.CategoryName, new
     {
         controller = "Game",
         action = "List",
-        category = link.CategoryName,
+        category = link.Category.CategoryName,
         page = 1
     }, new
     {
