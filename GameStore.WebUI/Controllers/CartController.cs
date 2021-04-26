@@ -17,49 +17,43 @@ namespace GameStore.WebUI.Controllers
             repository = repo;
         }
 
-        public ViewResult Index(string returnUrl)
+        public ViewResult Index(Cart cart, string returnUrl)
         {
             var model = new CartIndexViewModel() 
             { 
-                Cart = GetCart(),
+                Cart = cart,
                 ReturnUrl = returnUrl
             };
             return View(model);
         }
 
-        public RedirectToRouteResult AddToCart(int Id, string returnUrl)
+        public PartialViewResult Summary(Cart cart)
+        {
+            return PartialView(cart);
+        }
+
+        public RedirectResult AddToCart(Cart cart, int Id, string returnUrl)
         {
             Game game = repository.Games
                 .FirstOrDefault(g => g.Id == Id);
 
             if (game != null)
             {
-                GetCart().AddItem(game, 1);
+                cart.AddItem(game, 1);
             }
-            return RedirectToAction("Index", new { returnUrl });
+            return Redirect(returnUrl);
         }
 
-        public RedirectToRouteResult RemoveFromCart(int gameId, string returnUrl)
+        public RedirectToRouteResult RemoveFromCart(Cart cart, int Id, string returnUrl)
         {
             Game game = repository.Games
-                .FirstOrDefault(g => g.Id == gameId);
+                .FirstOrDefault(g => g.Id == Id);
 
             if (game != null)
             {
-                GetCart().RemoveLine(game);
+                cart.RemoveLine(game);
             }
             return RedirectToAction("Index", new { returnUrl });
-        }
-
-        public Cart GetCart()
-        {
-            Cart cart = (Cart)Session["Cart"];
-            if (cart == null)
-            {
-                cart = new Cart();
-                Session["Cart"] = cart;
-            }
-            return cart;
         }
     }
 }

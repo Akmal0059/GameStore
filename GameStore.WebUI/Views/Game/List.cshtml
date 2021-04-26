@@ -7,7 +7,8 @@
 
 @foreach (var p in @Model.Games)
 {
-    @Html.Partial("GameSummary", p)
+    @Html.Partial("GameSummary", p, new ViewDataDictionary { { "category", Model.CurrentCategory }, 
+                                                             { "page", Model.PagingInfo.CurrentPage} })
 }
 
 <div class="btn-group pull-right">

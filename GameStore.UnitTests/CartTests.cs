@@ -1,10 +1,15 @@
-﻿using GameStore.Domain.Entities;
+﻿using GameStore.Domain.Abstract;
+using GameStore.Domain.Entities;
+using GameStore.WebUI.Controllers;
+using GameStore.WebUI.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace GameStore.UnitTests
 {
@@ -117,6 +122,72 @@ namespace GameStore.UnitTests
 
             // Утверждение
             Assert.AreEqual(cart.Lines.Count(), 0);
+        }
+
+        [TestMethod]
+        public void Can_Add_To_Cart()
+        {
+            // Организация - создание имитированного хранилища
+            Mock<IGameRepository> mock = new Mock<IGameRepository>();
+            mock.Setup(m => m.Games).Returns(new List<Game> 
+            {
+                new Game {Id = 1, Name = "Игра1"},
+            }.AsQueryable());
+
+            // Организация - создание корзины
+            Cart cart = new Cart();
+
+            // Организация - создание контроллера
+            CartController controller = new CartController(mock.Object);
+
+            // Действие - добавить игру в корзину
+            controller.AddToCart(cart, 1, "/");
+
+            // Утверждение
+            Assert.AreEqual(cart.Lines.Count(), 1);
+            Assert.AreEqual(cart.Lines.ToList()[0].Game.Id, 1);
+        }
+
+        [TestMethod]
+        public void Adding_Game_To_Cart_Goes_To_Cart_Screen()
+        {
+            // Организация - создание имитированного хранилища
+            Mock<IGameRepository> mock = new Mock<IGameRepository>();
+            mock.Setup(m => m.Games).Returns(new List<Game> 
+            {
+                new Game {Id = 1, Name = "Игра1"},
+            }.AsQueryable());
+
+            // Организация - создание корзины
+            Cart cart = new Cart();
+
+            // Организация - создание контроллера
+            CartController controller = new CartController(mock.Object);
+
+            // Действие - добавить игру в корзину
+            RedirectResult result = controller.AddToCart(cart, 2, "myUrl");
+
+            // Утверждение
+            Assert.AreEqual(result.Url, "myUrl");
+            //Assert.AreEqual(result.["returnUrl"], "myUrl");
+        }
+
+        [TestMethod]
+        public void Can_View_Cart_Contents()
+        {
+            // Организация - создание корзины
+            Cart cart = new Cart();
+
+            // Организация - создание контроллера
+            CartController target = new CartController(null);
+
+            // Действие - вызов метода действия Index()
+            CartIndexViewModel result
+                = (CartIndexViewModel)target.Index(cart, "myUrl").ViewData.Model;
+
+            // Утверждение
+            Assert.AreSame(result.Cart, cart);
+            Assert.AreEqual(result.ReturnUrl, "myUrl");
         }
     }
 }

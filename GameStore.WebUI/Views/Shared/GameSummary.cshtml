@@ -1,5 +1,9 @@
 ﻿@model GameStore.Domain.Entities.Game
-
+@{
+    int page = Convert.ToInt32(ViewData["page"]);
+    GameStore.Domain.Entities.Category category = (GameStore.Domain.Entities.Category)ViewData["category"];
+    string returnUrl = category == null ? "/" : $"{category.CategoryName}/Page{page}";
+}
 <div class="well">
     <h3>
         <strong>@Model.Name</strong>
@@ -16,7 +20,8 @@
     {
         <div class="pull-right">
             @Html.HiddenFor(x => x.Id)
-            @Html.Hidden("returnUrl", Request.Url.PathAndQuery)
+
+            @Html.Hidden("returnUrl", Request.Url.AbsoluteUri)
             <input type="submit" class="btn btn-success" value="Добавить в корзину" />
         </div>
     }
