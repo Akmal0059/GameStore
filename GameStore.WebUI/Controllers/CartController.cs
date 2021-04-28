@@ -12,9 +12,11 @@ namespace GameStore.WebUI.Controllers
     public class CartController : Controller
     {
         private IGameRepository repository;
-        public CartController(IGameRepository repo)
+        private IOrderProcessor orderProcessor;
+        public CartController(IGameRepository repo, IOrderProcessor orderProc)
         {
             repository = repo;
+            orderProcessor = orderProc;
         }
 
         public ViewResult Index(Cart cart, string returnUrl)
@@ -30,6 +32,28 @@ namespace GameStore.WebUI.Controllers
         public PartialViewResult Summary(Cart cart)
         {
             return PartialView(cart);
+        }
+
+        public ViewResult Checkout()
+        {
+            return View(new ShippingDetails());
+        }
+
+        [HttpPost]
+        public ViewResult Checkout(Cart cart, ShippingDetails shippingDetails)
+        {
+            if(cart.Lines.Count() == 0)
+            {
+                ModelState.AddModelError("", "Ваша корзина пуста!");
+            }
+
+            if (ModelState.IsValid)
+            {
+                orderProcessor.ProcessOrder(cart, shippingDetails);
+                cart.Clear();
+                return View("Completed");
+            }
+            return View(shippingDetails);
         }
 
         public RedirectResult AddToCart(Cart cart, int Id, string returnUrl)
